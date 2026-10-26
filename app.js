@@ -270,16 +270,14 @@
       const labelRadius = radius * .66;
       ctx.save();
       ctx.translate(center + Math.cos(middle) * labelRadius, center + Math.sin(middle) * labelRadius);
-      let textAngle = middle + Math.PI / 2;
-      const uprightAngle = ((textAngle % TAU) + TAU) % TAU;
-      if (uprightAngle > Math.PI / 2 && uprightAngle < Math.PI * 1.5) textAngle += Math.PI;
+      let textAngle = middle + Math.PI / 2 - 90 * Math.PI / 180;
       ctx.rotate(textAngle);
       ctx.fillStyle = "#fff";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       const fontSize = categories.length > 8 ? 14 : categories.length > 5 ? 15 : 17;
       ctx.font = "700 " + fontSize + "px sans-serif";
-      const lines = wrapCategory(category.name, categories.length > 8 ? 10 : 14);
+      const lines = wrapCategory(category.name, 20);
       lines.forEach(function (line, lineIndex) {
         const y = (lineIndex - (lines.length - 1) / 2) * (fontSize + 2);
         ctx.fillText(line, 0, y, radius * .58);
