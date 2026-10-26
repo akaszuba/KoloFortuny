@@ -62,6 +62,65 @@
   };
   const targetValues = { points: "10", rounds: "5" };
   let activeGoalMode = "points";
+  let audioContext = null;
+
+  function getAudioContext() {
+    const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextConstructor) return null;
+
+    try {
+      if (!audioContext) audioContext = new AudioContextConstructor();
+      if (audioContext.state === "suspended") audioContext.resume().catch(function () {});
+      return audioContext;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function playTone(context, frequency, startTime, duration, type, volume, endFrequency) {
+    try {
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(frequency, startTime);
+      if (endFrequency) oscillator.frequency.exponentialRampToValueAtTime(endFrequency, startTime + duration);
+      gain.gain.setValueAtTime(0.0001, startTime);
+      gain.gain.linearRampToValueAtTime(volume, startTime + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+      oscillator.connect(gain);
+      gain.connect(context.destination);
+      oscillator.start(startTime);
+      oscillator.stop(startTime + duration + 0.01);
+    } catch (error) {
+      // Audio is optional; the game should continue if a browser blocks sound.
+    }
+  }
+
+  function playWheelTick() {
+    const context = getAudioContext();
+    if (!context) return;
+    playTone(context, 1500, context.currentTime, 0.025, "triangle", 0.035, 750);
+  }
+
+  function playWheelStop() {
+    const context = getAudioContext();
+    if (!context) return;
+    const now = context.currentTime;
+    playTone(context, 660, now, 0.38, "sine", 0.07);
+    playTone(context, 990, now + 0.09, 0.48, "sine", 0.055);
+  }
+
+  function playAnswerSound(isCorrect) {
+    const context = getAudioContext();
+    if (!context) return;
+    const now = context.currentTime;
+    const notes = isCorrect
+      ? [{ frequency: 523, offset: 0 }, { frequency: 659, offset: 0.09 }, { frequency: 784, offset: 0.18 }]
+      : [{ frequency: 294, offset: 0 }, { frequency: 196, offset: 0.14 }];
+    notes.forEach(function (note) {
+      playTone(context, note.frequency, now + note.offset, isCorrect ? 0.2 : 0.25, "triangle", isCorrect ? 0.065 : 0.055);
+    });
+  }
 
   function readUsedIds() {
     try {
@@ -337,6 +396,7 @@
     drawWheel(state.rotation);
     state.spinning = true;
     elements.spinButton.disabled = true;
+    playWheelTick();
     elements.categoryStatus.textContent = "Koło się kręci…";
 
 
@@ -352,11 +412,20 @@
     const endRotation = startRotation + TAU * (5 + Math.floor(Math.random() * 3)) + delta;
     const startTime = performance.now();
     const duration = 4500;
+    let lastTickIndex = 0;
+    let lastTickTime = startTime;
 
     function animate(now) {
       const progress = Math.min(1, (now - startTime) / duration);
       const eased = 1 - Math.pow(1 - progress, 4);
-      drawWheel( startRotation + (endRotation - startRotation) * eased);
+      const rotation = startRotation + (endRotation - startRotation) * eased;
+      drawWheel(rotation);
+      const tickIndex = Math.floor((rotation - startRotation) / step);
+      if (tickIndex > lastTickIndex && now - lastTickTime >= 36) {
+        playWheelTick();
+        lastTickTime = now;
+      }
+      lastTickIndex = tickIndex;
       if (progress < 1) {
         state.animationFrame = window.requestAnimationFrame(animate);
         return;
@@ -366,6 +435,7 @@
       state.rotation = endRotation % TAU;
       drawWheel( state.rotation);
       state.spinning = false;
+      playWheelStop();
       elements.categoryStatus.textContent = "Wylosowana kategoria: " + selectedCategory;
       showQuestion(question);
     }
@@ -428,6 +498,7 @@
     game.answered += 1;
     const question = game.currentQuestion;
     const isCorrect = selectedIndex === question.correctIndex;
+    playAnswerSound(isCorrect);
     if (isCorrect) game.players[game.currentPlayer].score += 1;
 
     Array.from(elements.answerList.querySelectorAll(".answer-option")).forEach(function (button, index) {
