@@ -73,12 +73,18 @@
         <div class="game-layout">
           <section class="play-card" aria-label="Przebieg gry">
             <div id="wheel-section" class="wheel-section">
-              <div class="wheel-wrap">
-                <span class="wheel-pointer" aria-hidden="true"></span>
-                <canvas id="wheel-canvas" width="600" height="600" aria-label="Koło z kategoriami pytań"></canvas>
+              <div class="wheel-play-layout">
+                <div class="wheel-wrap">
+                  <span class="wheel-pointer" aria-hidden="true"></span>
+                  <canvas id="wheel-canvas" width="600" height="600" aria-label="Koło z kategoriami pytań"></canvas>
+                </div>
+                <section class="turn-panel" aria-labelledby="turn-title">
+                  <h2 id="turn-title" class="turn-title">Teraz gra: <span id="current-player-name"></span></h2>
+                  <p class="turn-instruction">Zakręć kołem, aby wylosować temat pytania.</p>
+                  <button id="spin-button" class="button button-primary spin-button" type="button"><span class="button-icon" aria-hidden="true">↻</span><span>Losuj kategorię</span></button>
+                  <p id="category-status" class="category-status" role="status" aria-live="polite"></p>
+                </section>
               </div>
-              <button id="spin-button" class="button button-primary spin-button" type="button"><span class="button-icon" aria-hidden="true">↻</span><span>Losuj kategorię</span></button>
-              <p id="category-status" class="category-status" role="status" aria-live="polite"></p>
             </div>
 
             <dialog id="question-panel" class="question-dialog" aria-labelledby="question-text" aria-describedby="question-progress">

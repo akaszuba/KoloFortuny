@@ -434,6 +434,45 @@ body { background: var(--paper); }
 .answer-result-dialog::backdrop { background: rgba(17, 31, 37, .28); }
 .button-primary { box-shadow: none; }
 
+.wheel-section { display: grid; align-items: center; }
+.wheel-play-layout {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(190px, 230px);
+  align-items: center;
+  gap: clamp(12px, 2vw, 24px);
+}
+.wheel-wrap {
+  width: min(100%, 520px);
+  justify-self: center;
+  aspect-ratio: 1;
+  margin: 0;
+}
+.wheel-pointer {
+  top: 50%;
+  right: -7px;
+  left: auto;
+  border-top: 17px solid transparent;
+  border-right: 27px solid var(--gold);
+  border-bottom: 17px solid transparent;
+  border-left: 0;
+  transform: translateY(-50%);
+}
+.turn-panel {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 18px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fffefa;
+  text-align: center;
+}
+.turn-title { margin: 0; font-size: clamp(17px, 1.7vw, 22px); font-weight: 800; letter-spacing: -.045em; overflow-wrap: anywhere; }
+.turn-instruction { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.turn-panel .spin-button { width: 100%; min-width: 0; margin: 0; }
+.turn-panel .category-status { margin: 0; }
+
 @media (max-width: 760px) {
   .game-layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 8px; }
   .play-card { height: 100%; }
@@ -447,6 +486,11 @@ body { background: var(--paper); }
   .scoreboard-row { min-height: 38px; gap: 7px; padding: 5px 7px; }
   .player-name { font-size: 12px; }
   .player-score { font-size: 17px; }
+}
+@media (max-width: 520px) {
+  .wheel-play-layout { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .wheel-wrap { width: min(100%, 58dvh, 420px); }
+  .turn-panel { width: min(100%, 420px); justify-self: center; padding: 12px; gap: 8px; }
 }
 @media (max-height: 620px) {
   html, body { height: auto; min-height: 100%; overflow-x: hidden; overflow-y: auto; }

@@ -27,6 +27,7 @@
     goalPill: document.getElementById("goal-pill"),
     wheelSection: document.getElementById("wheel-section"),
     wheelCanvas: document.getElementById("wheel-canvas"),
+    currentPlayerName: document.getElementById("current-player-name"),
     spinButton: document.getElementById("spin-button"),
     categoryStatus: document.getElementById("category-status"),
     questionPanel: document.getElementById("question-panel"),
@@ -345,6 +346,7 @@
   function updateGameDisplay() {
     if (!state.game) return;
     const game = state.game;
+    elements.currentPlayerName.textContent = game.players[game.currentPlayer].name;
     elements.goalPill.textContent = game.mode === "points"
       ? "Cel: " + game.target + " pkt"
       : "Runda " + game.round + " z " + game.target;
@@ -385,7 +387,7 @@
     const selectedIndex = Math.floor(Math.random() * categories.length);
     const selectedCategory = categories[selectedIndex];
     const step = TAU / categories.length;
-    const desiredRotation = ((-((selectedIndex + .5) * step) % TAU) + TAU) % TAU;
+    const desiredRotation = ((Math.PI / 2 - (selectedIndex + .5) * step) % TAU + TAU) % TAU;
     const currentRotation = ((state.rotation % TAU) + TAU) % TAU;
     const delta = (desiredRotation - currentRotation + TAU) % TAU;
     const startRotation = state.rotation;
