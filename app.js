@@ -3,7 +3,7 @@
 
   const USED_QUESTIONS_KEY = "kolo-wiedzy-used-questions-v1";
   const TAU = Math.PI * 2;
-  const colors = ["#1e7466", "#d99b45", "#426d86", "#cf6d55", "#708952", "#77618d", "#2d8580", "#c17b38", "#526477", "#9b7051"];
+  const colors = ["#365e92", "#a96a2e", "#2f7e83", "#76528c", "#587147", "#426c86", "#a96f38", "#50617b", "#965e58", "#287c76"];
   const letterLabels = ["A", "B", "C", "D", "E", "F"];
 
   const elements = {
@@ -203,13 +203,13 @@
     if (!categories.length) {
       ctx.beginPath();
       ctx.arc(center, center, radius, 0, TAU);
-      ctx.fillStyle = "#e8e9e2";
+      ctx.fillStyle = "#263952";
       ctx.fill();
       ctx.beginPath();
       ctx.arc(center, center, 72, 0, TAU);
-      ctx.fillStyle = "#fffefa";
+      ctx.fillStyle = "#1b2940";
       ctx.fill();
-      ctx.fillStyle = "#53616c";
+      ctx.fillStyle = "#bfcbdb";
       ctx.textAlign = "center";
       ctx.font = "700 14px sans-serif";
       ctx.fillText("PUSTO", center, center + 5);
@@ -229,7 +229,7 @@
       ctx.fillStyle = colors[index % colors.length];
       ctx.fill();
       ctx.lineWidth = 3;
-      ctx.strokeStyle = "#fffefa";
+      ctx.strokeStyle = "#111c2e";
       ctx.stroke();
 
       const labelRadius = radius * .66;
@@ -252,17 +252,17 @@
 
     ctx.beginPath();
     ctx.arc(center, center, 65, 0, TAU);
-    ctx.fillStyle = "#fffefa";
+    ctx.fillStyle = "#1b2940";
     ctx.fill();
     ctx.lineWidth = 5;
-    ctx.strokeStyle = "#e4d8bf";
+    ctx.strokeStyle = "#efb94c";
     ctx.stroke();
-    ctx.fillStyle = "#233640";
+    ctx.fillStyle = "#edf2fa";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.font = "800 13px sans-serif";
     ctx.fillText("KOŁO", center, center - 7);
-    ctx.fillStyle = "#1e7466";
+    ctx.fillStyle = "#58b5c4";
     ctx.font = "700 11px sans-serif";
     ctx.fillText("WIEDZY", center, center + 12);
   }

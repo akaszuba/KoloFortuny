@@ -492,6 +492,74 @@ body { background: var(--paper); }
   .wheel-wrap { width: min(100%, 58dvh, 420px); }
   .turn-panel { width: min(100%, 420px); justify-self: center; padding: 12px; gap: 8px; }
 }
+
+/* Night-casino theme: deep navy surfaces with gold and turquoise accents. */
+:root {
+  color-scheme: dark;
+  --ink: #edf2fa;
+  --ink-soft: #bfcbdb;
+  --muted: #9aabc2;
+  --paper: #111c2e;
+  --white: #1b2940;
+  --line: #34445d;
+  --green: #58b5c4;
+  --green-dark: #82d0d9;
+  --green-wash: #263952;
+  --gold: #efb94c;
+  --coral: #ef877c;
+  --shadow: none;
+}
+html, body { color: var(--ink); background: var(--paper); }
+body {
+  background:
+    radial-gradient(ellipse at 9% 10%, rgba(54, 94, 146, .18), transparent 38%),
+    radial-gradient(ellipse at 91% 4%, rgba(88, 181, 196, .11), transparent 34%),
+    var(--paper);
+}
+.app-header, .app-footer { border-color: rgba(166, 189, 218, .15); }
+.setup-card, .play-card, .score-card { border-color: var(--line); background: var(--white); color: var(--ink); }
+.field-control { border-color: #435773; background: #142137; color: var(--ink); }
+.field-control:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(88, 181, 196, .2); }
+.goal-option-content { border-color: var(--line); background: #18263b; }
+.goal-option input:checked + .goal-option-content { border-color: var(--green); background: #223b52; }
+.goal-option input:focus-visible + .goal-option-content { outline-color: rgba(88, 181, 196, .35); }
+.goal-icon, .answer-letter { background: #293a52; color: var(--green-dark); }
+.button:focus-visible, .text-button:focus-visible { outline-color: rgba(88, 181, 196, .45); }
+.button-primary, .button-primary:hover:not(:disabled) { background: var(--gold); color: #111c2e; }
+.button-primary:hover:not(:disabled) { filter: brightness(1.07); }
+.text-button { color: var(--green-dark); text-decoration-color: rgba(130, 208, 217, .48); }
+.data-status[data-error="true"] { color: #ff968a; }
+.pool-note { border-top-color: var(--line); }
+.goal-pill { border-color: #43536b; background: #202f48; color: var(--ink-soft); }
+.turn-panel { border-color: var(--line); background: #1b2940; }
+.question-dialog, .answer-result-dialog { border-color: #43536b; background: #1b2940; color: var(--ink); }
+.question-dialog::backdrop { background: rgba(5, 11, 20, .76); }
+.answer-result-dialog::backdrop { background: rgba(5, 11, 20, .66); }
+.category-chip { background: #263952; color: #a4e3e9; }
+.question-image { background: #142137; }
+.answer-option { border-color: #3a4b65; background: #202f48; color: var(--ink); }
+.answer-option:hover:not(:disabled) { border-color: #58b5c4; background: #263b54; }
+.answer-option:focus-visible { outline-color: rgba(88, 181, 196, .4); }
+.answer-letter { color: var(--ink-soft); }
+.answer-option.is-correct { border-color: #58b5a4; background: #203b47; }
+.answer-option.is-correct .answer-letter { background: #287b7e; color: #fff; }
+.answer-option.is-wrong { border-color: #a75e61; background: #432c3c; }
+.answer-option.is-wrong .answer-letter { background: #a34f54; color: #fff; }
+.answer-result-icon { background: #443b2a; color: var(--gold); }
+.answer-result-dialog.is-correct .answer-result-icon { background: #203b47; color: #82d0c0; }
+.score-icon { background: #443b2a; color: var(--gold); }
+.scoreboard-row { background: #202f48; }
+.scoreboard-row.active { border-color: #477c88; background: #223b52; }
+.player-indicator { background: #65758a; }
+.scoreboard-row.active .player-indicator { background: var(--green); box-shadow: 0 0 0 4px rgba(88, 181, 196, .18); }
+.player-score, .progress-heading strong { color: var(--gold); }
+.score-divider { background: var(--line); }
+.progress-track { background: #2b3a50; }
+.progress-track span { background: linear-gradient(90deg, #58b5c4, #efb94c); }
+.finish-medal { background: #443b2a; color: var(--gold); }
+.winner-text { color: var(--green-dark); }
+.final-ranking li { background: #202f48; color: var(--ink-soft); }
+.final-ranking li:first-child { background: #263952; color: #a4e3e9; }
 @media (max-height: 620px) {
   html, body { height: auto; min-height: 100%; overflow-x: hidden; overflow-y: auto; }
   body { display: block; min-height: 100dvh; }
