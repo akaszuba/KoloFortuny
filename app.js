@@ -251,12 +251,23 @@
 
   function drawWheel( rotation) {
     const canvas = elements.wheelCanvas;
+    const logicalSize = 600;
+    const displaySize = canvas.getBoundingClientRect().width || logicalSize;
+    const deviceScale = Math.min(window.devicePixelRatio || 1, 2);
+    const renderScale = Math.max(1, displaySize / logicalSize * deviceScale);
+    const backingSize = Math.ceil(logicalSize * renderScale);
+    if (canvas.width !== backingSize || canvas.height !== backingSize) {
+      canvas.width = backingSize;
+      canvas.height = backingSize;
+    }
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const center = canvas.width / 2;
+    const scale = canvas.width / logicalSize;
+    ctx.setTransform(scale, 0, 0, scale, 0, 0);
+    const center = logicalSize / 2;
     const radius = center - 21;
     const safeRotation = ((rotation % TAU) + TAU) % TAU;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, logicalSize, logicalSize);
     let categories = state.categoriesOnWheel;
 
     if (!categories.length) {
