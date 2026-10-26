@@ -299,7 +299,7 @@
       ctx.fillStyle = "#fff";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      const fontSize = categories.length > 8 ? 14 : categories.length > 5 ? 15 : 17;
+      const fontSize = 20;
       ctx.font = "700 " + fontSize + "px sans-serif";
       const lines = wrapCategory(category, 20);
       lines.forEach(function (line, lineIndex) {
@@ -315,15 +315,7 @@
     ctx.fill();
     ctx.lineWidth = 5;
     ctx.strokeStyle = "#efb94c";
-    ctx.stroke();
-    ctx.fillStyle = "#edf2fa";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.font = "800 13px sans-serif";
-    ctx.fillText("KOŁO", center, center - 7);
-    ctx.fillStyle = "#58b5c4";
-    ctx.font = "700 11px sans-serif";
-    ctx.fillText("WIEDZY", center, center + 12);
+    ctx.stroke();    
   }
 
   function beginGame(event) {
