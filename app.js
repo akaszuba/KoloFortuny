@@ -24,11 +24,8 @@
     questionCount: document.getElementById("question-count"),
     categoryCount: document.getElementById("category-count"),
     endGameButton: document.getElementById("end-game-button"),
-    turnHeading: document.getElementById("turn-heading"),
     goalPill: document.getElementById("goal-pill"),
     wheelSection: document.getElementById("wheel-section"),
-    wheelTitle: document.getElementById("wheel-title"),
-    wheelInstruction: document.getElementById("wheel-instruction"),
     wheelCanvas: document.getElementById("wheel-canvas"),
     spinButton: document.getElementById("spin-button"),
     categoryStatus: document.getElementById("category-status"),
@@ -38,8 +35,11 @@
     questionText: document.getElementById("question-text"),
     questionImage: document.getElementById("question-image"),
     answerList: document.getElementById("answer-list"),
-    answerFeedback: document.getElementById("answer-feedback"),
-    nextButton: document.getElementById("next-button"),
+    answerFeedbackDialog: document.getElementById("answer-feedback-dialog"),
+    answerResultIcon: document.getElementById("answer-result-icon"),
+    answerResultTitle: document.getElementById("answer-result-title"),
+    answerResultMessage: document.getElementById("answer-result-message"),
+    answerResultContinue: document.getElementById("answer-result-continue"),
     finishPanel: document.getElementById("finish-panel"),
     finishTitle: document.getElementById("finish-title"),
     finishReason: document.getElementById("finish-reason"),
@@ -47,9 +47,6 @@
     finalRanking: document.getElementById("final-ranking"),
     newGameButton: document.getElementById("new-game-button"),
     scoreboard: document.getElementById("scoreboard"),
-    availableCount: document.getElementById("available-count"),
-    usedCount: document.getElementById("used-count"),
-    usedProgress: document.getElementById("used-progress")
   };
 
   const state = {
@@ -156,13 +153,9 @@
   function refreshPoolDisplay() {
     const total = state.questions.length;
     const available = getAvailableQuestions().length;
-    const used = total - available;
     elements.poolSummary.textContent = total
       ? "Pozostało " + available + " z " + total + " pytań."
       : "Wczytuję pulę pytań…";
-    elements.availableCount.textContent = String(available);
-    elements.usedCount.textContent = "Wykorzystano " + used + " z " + total + " pytań";
-    elements.usedProgress.style.width = (total ? Math.round(used / total * 100) : 0) + "%";
     elements.startButton.disabled = !state.loaded || available === 0;
     if (state.loaded && available === 0) {
       elements.dataStatus.textContent = "Wykorzystano już całą pulę. Wyzeruj historię, aby zagrać ponownie.";
@@ -333,6 +326,7 @@
       answered: 0,
       currentQuestion: null,
       answerSubmitted: false,
+      pendingFinishReason: "",
       finished: false
     };
     elements.setupView.hidden = true;
@@ -342,8 +336,6 @@
     elements.finishPanel.hidden = true;
     elements.wheelSection.hidden = false;
     elements.categoryStatus.textContent = "";
-    elements.wheelTitle.textContent = "Czas na losowanie";
-    elements.wheelInstruction.textContent = "Zakręćcie kołem, aby wylosować temat pytania.";
     elements.spinButton.disabled = false;
     state.categoriesOnWheel = getAvailableCategories();
     drawWheel(state.categoriesOnWheel, state.rotation);
@@ -353,16 +345,14 @@
   function updateGameDisplay() {
     if (!state.game) return;
     const game = state.game;
-    const player = game.players[game.currentPlayer];
-    elements.turnHeading.textContent = player.name + " — Twoja kolej";
     elements.goalPill.textContent = game.mode === "points"
       ? "Cel: " + game.target + " pkt"
       : "Runda " + game.round + " z " + game.target;
-    elements.wheelTitle.textContent = "Teraz gra: " + player.name;
     elements.scoreboard.replaceChildren();
     game.players.forEach(function (person, index) {
       const row = document.createElement("li");
       row.className = "scoreboard-row" + (!game.finished && index === game.currentPlayer ? " active" : "");
+      if (!game.finished && index === game.currentPlayer) row.setAttribute("aria-current", "true");
       const indicator = document.createElement("span");
       indicator.className = "player-indicator";
       indicator.setAttribute("aria-hidden", "true");
@@ -391,7 +381,6 @@
     state.spinning = true;
     elements.spinButton.disabled = true;
     elements.categoryStatus.textContent = "Koło się kręci…";
-    elements.wheelInstruction.textContent = "Za chwilę poznacie kategorię.";
 
     const selectedIndex = Math.floor(Math.random() * categories.length);
     const selectedCategory = categories[selectedIndex];
@@ -442,15 +431,15 @@
     elements.questionProgress.textContent = "Pytanie " + (state.game.answered + 1);
     elements.questionText.textContent = question.question;
     elements.answerList.replaceChildren();
-    elements.answerFeedback.hidden = true;
-    elements.answerFeedback.className = "answer-feedback";
-    elements.answerFeedback.textContent = "";
-    elements.nextButton.hidden = true;
+    elements.questionPanel.classList.toggle("has-image", Boolean(question.image));
     elements.questionImage.hidden = !question.image;
     elements.questionImage.removeAttribute("src");
     if (question.image) {
       elements.questionImage.alt = "Ilustracja do pytania";
-      elements.questionImage.onerror = function () { elements.questionImage.hidden = true; };
+      elements.questionImage.onerror = function () {
+        elements.questionImage.hidden = true;
+        elements.questionPanel.classList.remove("has-image");
+      };
       elements.questionImage.src = question.image;
     }
 
@@ -498,25 +487,41 @@
     });
 
     const playerName = game.players[game.currentPlayer].name;
-    elements.answerFeedback.hidden = false;
-    elements.answerFeedback.classList.add(isCorrect ? "success" : "miss");
-    elements.answerFeedback.textContent = isCorrect
-      ? "Dobra odpowiedź! " + playerName + " zdobywa 1 punkt."
-      : "To nie ta odpowiedź. Poprawna odpowiedź: " + question.answers[question.correctIndex] + ".";
     updateGameDisplay();
 
+    let finishReason = "";
     if (game.mode === "points" && game.players[game.currentPlayer].score >= game.target) {
-      finishGame(playerName + " osiąga cel " + game.target + " " + plural(game.target, "punkt", "punkty", "punktów") + ".");
-      return;
-    }
-    if (game.mode === "rounds" && game.round === game.target && game.currentPlayer === game.players.length - 1) {
-      finishGame("Każdy gracz rozegrał " + game.target + " " + plural(game.target, "rundę", "rundy", "rund") + ".");
-      return;
+      finishReason = playerName + " osiąga cel " + game.target + " " + plural(game.target, "punkt", "punkty", "punktów") + ".";
+    } else if (game.mode === "rounds" && game.round === game.target && game.currentPlayer === game.players.length - 1) {
+      finishReason = "Każdy gracz rozegrał " + game.target + " " + plural(game.target, "rundę", "rundy", "rund") + ".";
     }
 
     const nextPlayerIndex = (game.currentPlayer + 1) % game.players.length;
-    elements.nextButton.textContent = "Następna kolej: " + game.players[nextPlayerIndex].name;
-    elements.nextButton.hidden = false;
+    elements.answerFeedbackDialog.classList.toggle("is-correct", isCorrect);
+    elements.answerResultIcon.textContent = isCorrect ? "✓" : "!";
+    elements.answerResultTitle.textContent = isCorrect ? "Dobra odpowiedź" : "Niepoprawna odpowiedź";
+    elements.answerResultMessage.textContent = isCorrect
+      ? playerName + " zdobywa 1 punkt."
+      : "Poprawna odpowiedź: " + question.answers[question.correctIndex] + ".";
+    elements.answerResultContinue.textContent = finishReason
+      ? "Pokaż wynik końcowy"
+      : "Następna kolej: " + game.players[nextPlayerIndex].name;
+    game.pendingFinishReason = finishReason;
+    elements.answerFeedbackDialog.showModal();
+    elements.answerResultContinue.focus({ preventScroll: true });
+  }
+
+  function continueAfterAnswer() {
+    const game = state.game;
+    if (!game || !game.answerSubmitted || game.finished) return;
+    const finishReason = game.pendingFinishReason;
+    closeAnswerFeedbackDialog();
+    if (finishReason) {
+      game.pendingFinishReason = "";
+      finishGame(finishReason);
+      return;
+    }
+    nextTurn();
   }
 
   function nextTurn() {
@@ -532,11 +537,11 @@
     }
     closeQuestionPanel();
     elements.categoryStatus.textContent = "";
-    elements.wheelInstruction.textContent = "Zakręćcie kołem, aby wylosować temat pytania.";
     elements.spinButton.disabled = false;
     state.categoriesOnWheel = getAvailableCategories();
     drawWheel(state.categoriesOnWheel, state.rotation);
     updateGameDisplay();
+    elements.spinButton.focus({ preventScroll: true });
   }
 
   function finishGame(reason) {
@@ -566,6 +571,7 @@
       elements.finalRanking.append(row);
     });
     updateGameDisplay();
+    elements.newGameButton.focus({ preventScroll: true });
   }
 
   function returnToSetup() {
@@ -587,7 +593,12 @@
   }
 
   function closeQuestionPanel() {
+    closeAnswerFeedbackDialog();
     if (elements.questionPanel.open) elements.questionPanel.close();
+  }
+
+  function closeAnswerFeedbackDialog() {
+    if (elements.answerFeedbackDialog.open) elements.answerFeedbackDialog.close();
   }
 
   function resetQuestionHistory() {
@@ -613,8 +624,11 @@
   elements.questionPanel.addEventListener("cancel", function (event) {
     event.preventDefault();
   });
+  elements.answerFeedbackDialog.addEventListener("cancel", function (event) {
+    event.preventDefault();
+  });
   elements.spinButton.addEventListener("click", spinWheel);
-  elements.nextButton.addEventListener("click", nextTurn);
+  elements.answerResultContinue.addEventListener("click", continueAfterAnswer);
   elements.resetPoolButton.addEventListener("click", resetQuestionHistory);
   elements.newGameButton.addEventListener("click", returnToSetup);
   elements.endGameButton.addEventListener("click", function () {

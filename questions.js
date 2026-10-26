@@ -1100,7 +1100,7 @@ window.QUESTIONS = [
       "Skrzyżowanie równorzędne.",
       "Uwaga! Środek silnie drażniący."
     ],
-    "correctIndex": 1,
+    "correctIndex": 2,
     "image": "pictures/card-027.jpg"
   },
   {

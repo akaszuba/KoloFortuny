@@ -69,17 +69,10 @@
       </section>
 
       <section id="game-view" class="game-view" hidden>
-        <div class="game-heading">
-          <div><h1 id="turn-heading">Wasza kolej</h1></div>
-          <div class="game-heading-actions"><div id="goal-pill" class="goal-pill"></div><button id="end-game-button" class="text-button" type="button" hidden>Zakończ grę</button></div>
-        </div>
+        <h1 class="visually-hidden">Gra w toku</h1>
         <div class="game-layout">
           <section class="play-card" aria-label="Przebieg gry">
             <div id="wheel-section" class="wheel-section">
-              <div class="wheel-intro">
-                <h2 id="wheel-title">Kto zaczyna?</h2>
-                <p id="wheel-instruction" class="muted-copy">Zakręćcie kołem, aby wylosować temat pytania.</p>
-              </div>
               <div class="wheel-wrap">
                 <span class="wheel-pointer" aria-hidden="true"></span>
                 <canvas id="wheel-canvas" width="600" height="600" aria-label="Koło z kategoriami pytań"></canvas>
@@ -90,11 +83,18 @@
 
             <dialog id="question-panel" class="question-dialog" aria-labelledby="question-text" aria-describedby="question-progress">
               <div class="question-topline"><span id="question-category" class="category-chip"></span><span id="question-progress" class="question-progress"></span></div>
-              <h2 id="question-text" class="question-text" tabindex="-1"></h2>
-              <img id="question-image" class="question-image" alt="" hidden>
+              <div class="question-main">
+                <h2 id="question-text" class="question-text" tabindex="-1"></h2>
+                <img id="question-image" class="question-image" alt="" hidden>
+              </div>
               <div id="answer-list" class="answer-list" role="group" aria-label="Wybierz odpowiedź"></div>
-              <div id="answer-feedback" class="answer-feedback" role="status" aria-live="polite" hidden></div>
-              <button id="next-button" class="button button-primary button-wide next-button" type="button" hidden></button>
+            </dialog>
+
+            <dialog id="answer-feedback-dialog" class="answer-result-dialog" aria-labelledby="answer-result-title" aria-describedby="answer-result-message">
+              <span id="answer-result-icon" class="answer-result-icon" aria-hidden="true"></span>
+              <h2 id="answer-result-title" class="answer-result-title"></h2>
+              <p id="answer-result-message" class="answer-result-message" aria-live="polite"></p>
+              <button id="answer-result-continue" class="button button-primary button-wide" type="button"></button>
             </dialog>
 
             <section id="finish-panel" class="finish-panel" aria-live="polite" hidden>
@@ -107,17 +107,11 @@
             </section>
           </section>
 
-          <aside class="score-card" aria-label="Wyniki i postęp gry">
+          <aside class="score-card" aria-label="Sterowanie i wyniki gry">
             <div class="score-card-heading">
-              <div><h2>Gracze</h2></div>
-              <span class="score-icon" aria-hidden="true">✳</span>
+              <div class="score-card-actions"><div id="goal-pill" class="goal-pill"></div><button id="end-game-button" class="text-button" type="button" hidden>Zakończ grę</button></div>
             </div>
             <ol id="scoreboard" class="scoreboard"></ol>
-            <div class="score-divider"></div>
-            <div class="progress-heading"><span>Pula pytań</span><strong id="available-count">—</strong></div>
-            <p id="used-count" class="used-count">—</p>
-            <div class="progress-track" aria-hidden="true"><span id="used-progress"></span></div>
-            <p class="score-note">Każde pytanie pojawia się tylko raz. Historia jest zapisana w tej przeglądarce.</p>
           </aside>
         </div>
       </section>
