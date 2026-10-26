@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4f2ec">
+    <title>Koło wiedzy</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="questions.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="brand" href="./" aria-label="Koło wiedzy — strona główna">
+        <span class="brand-mark" aria-hidden="true">K</span><span>koło wiedzy</span>
+      </a>
+      <div class="header-right">
+        <span class="header-caption">Gra dla 1–4 osób</span>
+        <button id="end-game-button" class="text-button" type="button" hidden>Zakończ grę</button>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section id="setup-view" class="setup-view">
+        <div class="intro-grid">
+          <div class="intro-copy">
+            <p class="eyebrow"><span class="eyebrow-dot"></span> WIEDZA • LOS • DOBRA ZABAWA</p>
+            <h1>Zakręć.<br>Odpowiedz.<br><em>Zdobądź punkt.</em></h1>
+            <p class="intro-description">Wybierzcie graczy i cel gry. Koło wskaże kategorię, a każda odpowiedź przybliży Was do zwycięstwa.</p>
+            <div class="quick-stats" aria-label="Informacje o puli pytań">
+              <div class="quick-stat"><strong id="question-count">—</strong><span>pytań w puli</span></div>
+              <div class="quick-stat"><strong id="category-count">—</strong><span>kategorii</span></div>
+              <div class="quick-stat"><strong>1–4</strong><span>graczy</span></div>
+            </div>
+          </div>
+
+          <form id="setup-form" class="setup-card">
+            <div class="card-heading">
+              <div><p class="eyebrow">PRZYGOTOWANIE</p><h2>Ustawcie grę</h2></div>
+              <span class="step-badge" aria-hidden="true">01</span>
+            </div>
+            <label class="field-label" for="player-count">Liczba graczy</label>
+            <select id="player-count" class="field-control">
+              <option value="1">1 gracz</option>
+              <option value="2" selected>2 graczy</option>
+              <option value="3">3 graczy</option>
+              <option value="4">4 graczy</option>
+            </select>
+            <div id="player-name-fields" class="player-name-fields"></div>
+
+            <fieldset class="goal-fieldset">
+              <legend class="field-label">Kiedy kończymy grę?</legend>
+              <div class="goal-options">
+                <label class="goal-option">
+                  <input type="radio" name="goalMode" value="points" checked>
+                  <span class="goal-option-content"><span class="goal-icon" aria-hidden="true">✳</span><span><strong>Punkty</strong><small>Kto pierwszy osiągnie cel</small></span></span>
+                </label>
+                <label class="goal-option">
+                  <input type="radio" name="goalMode" value="rounds">
+                  <span class="goal-option-content"><span class="goal-icon" aria-hidden="true">↻</span><span><strong>Rundy</strong><small>Każdy gra tyle samo razy</small></span></span>
+                </label>
+              </div>
+            </fieldset>
+
+            <label class="field-label" id="target-label" for="target-value">Cel punktowy</label>
+            <div class="target-input-wrap">
+              <input id="target-value" class="field-control" type="number" min="1" max="999" value="10" required>
+              <span id="target-unit" class="target-unit">pkt</span>
+            </div>
+            <p id="target-help" class="field-hint">Pierwszy gracz, który zdobędzie ten wynik, wygrywa.</p>
+            <button id="start-button" class="button button-primary button-wide" type="submit" disabled><span>Rozpocznij grę</span><span aria-hidden="true">↗</span></button>
+            <p id="data-status" class="data-status" role="status">Wczytuję pulę pytań…</p>
+            <div class="pool-note">
+              <p id="pool-summary">Historia wykorzystanych pytań zapisuje się w tej przeglądarce.</p>
+              <button id="reset-pool-button" class="text-button" type="button">Wyzeruj historię pytań</button>
+            </div>
+            <p id="storage-note" class="storage-note">Historia pytań zapisuje się w tej przeglądarce.</p>
+          </form>
+        </div>
+      </section>
+
+      <section id="game-view" class="game-view" hidden>
+        <div class="game-heading">
+          <div><p class="eyebrow">TRWA ROZGRYWKA</p><h1 id="turn-heading">Wasza kolej</h1></div>
+          <div id="goal-pill" class="goal-pill"></div>
+        </div>
+        <div class="game-layout">
+          <section class="play-card" aria-label="Przebieg gry">
+            <div id="wheel-section" class="wheel-section">
+              <div class="wheel-intro">
+                <p class="eyebrow">LOSOWANIE KATEGORII</p>
+                <h2 id="wheel-title">Kto zaczyna?</h2>
+                <p id="wheel-instruction" class="muted-copy">Zakręćcie kołem, aby wylosować temat pytania.</p>
+              </div>
+              <div class="wheel-wrap">
+                <span class="wheel-pointer" aria-hidden="true"></span>
+                <canvas id="wheel-canvas" width="600" height="600" aria-label="Koło z kategoriami pytań"></canvas>
+              </div>
+              <button id="spin-button" class="button button-primary spin-button" type="button"><span class="button-icon" aria-hidden="true">↻</span><span>Losuj kategorię</span></button>
+              <p id="category-status" class="category-status" role="status" aria-live="polite"></p>
+            </div>
+
+            <section id="question-panel" class="question-panel" aria-live="polite" hidden>
+              <div class="question-topline"><span id="question-category" class="category-chip"></span><span id="question-progress" class="question-progress"></span></div>
+              <h2 id="question-text" class="question-text"></h2>
+              <img id="question-image" class="question-image" alt="" hidden>
+              <div id="answer-list" class="answer-list" role="group" aria-label="Wybierz odpowiedź"></div>
+              <div id="answer-feedback" class="answer-feedback" role="status" aria-live="polite" hidden></div>
+              <button id="next-button" class="button button-primary button-wide next-button" type="button" hidden></button>
+            </section>
+
+            <section id="finish-panel" class="finish-panel" aria-live="polite" hidden>
+              <span class="finish-medal" aria-hidden="true">✦</span>
+              <p class="eyebrow">KONIEC ROZGRYWKI</p>
+              <h2 id="finish-title">Gra zakończona</h2>
+              <p id="finish-reason" class="muted-copy"></p>
+              <p id="winner-text" class="winner-text"></p>
+              <ol id="final-ranking" class="final-ranking"></ol>
+              <button id="new-game-button" class="button button-primary" type="button">Ustaw nową grę</button>
+            </section>
+          </section>
+
+          <aside class="score-card" aria-label="Wyniki i postęp gry">
+            <div class="score-card-heading">
+              <div><p class="eyebrow">TABLICA WYNIKÓW</p><h2>Gracze</h2></div>
+              <span class="score-icon" aria-hidden="true">✳</span>
+            </div>
+            <ol id="scoreboard" class="scoreboard"></ol>
+            <div class="score-divider"></div>
+            <div class="progress-heading"><span>Pula pytań</span><strong id="available-count">—</strong></div>
+            <p id="used-count" class="used-count">—</p>
+            <div class="progress-track" aria-hidden="true"><span id="used-progress"></span></div>
+            <p class="score-note">Każde pytanie pojawia się tylko raz. Historia jest zapisana w tej przeglądarce.</p>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer"><span>Koło wiedzy</span><span>Statyczna gra quizowa</span></footer>
+  </body>
+</html>
