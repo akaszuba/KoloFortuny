@@ -1300,7 +1300,7 @@ window.QUESTIONS = [
       "Prawda",
       "Fałsz"
     ],
-    "correctIndex": 0,
+    "correctIndex": 1,
     "image": "pictures/card-053.jpg"
   },
   {
@@ -1323,7 +1323,7 @@ window.QUESTIONS = [
       "Prawda",
       "Fałsz"
     ],
-    "correctIndex": 0,
+    "correctIndex": 1,
     "image": "pictures/card-057.jpg"
   },
   {
@@ -2028,7 +2028,7 @@ window.QUESTIONS = [
       "Prawda",
       "Fałsz"
     ],
-    "correctIndex": 0,
+    "correctIndex": 1,
     "image": "pictures/card-124.jpg"
   },
   {
