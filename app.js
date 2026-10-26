@@ -158,7 +158,7 @@
     const available = getAvailableQuestions().length;
     const used = total - available;
     elements.poolSummary.textContent = total
-      ? "Pozostało " + available + " z " + total + " pytań. Historia zapisuje się w tej przeglądarce."
+      ? "Pozostało " + available + " z " + total + " pytań."
       : "Wczytuję pulę pytań…";
     elements.availableCount.textContent = String(available);
     elements.usedCount.textContent = "Wykorzystano " + used + " z " + total + " pytań";
@@ -338,7 +338,7 @@
     elements.setupView.hidden = true;
     elements.gameView.hidden = false;
     elements.endGameButton.hidden = false;
-    elements.questionPanel.hidden = true;
+    closeQuestionPanel();
     elements.finishPanel.hidden = true;
     elements.wheelSection.hidden = false;
     elements.categoryStatus.textContent = "";
@@ -471,8 +471,8 @@
       button.addEventListener("click", function () { submitAnswer(index); });
       elements.answerList.append(button);
     });
-    elements.questionPanel.hidden = false;
-    elements.questionPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    if (!elements.questionPanel.open) elements.questionPanel.showModal();
+    elements.questionText.focus({ preventScroll: true });
   }
 
   function plural(n, one, few, many) {
@@ -530,7 +530,7 @@
       finishGame("Wykorzystaliście wszystkie dostępne pytania.");
       return;
     }
-    elements.questionPanel.hidden = true;
+    closeQuestionPanel();
     elements.categoryStatus.textContent = "";
     elements.wheelInstruction.textContent = "Zakręćcie kołem, aby wylosować temat pytania.";
     elements.spinButton.disabled = false;
@@ -544,7 +544,7 @@
     if (!game || game.finished) return;
     game.finished = true;
     elements.endGameButton.hidden = true;
-    elements.questionPanel.hidden = true;
+    closeQuestionPanel();
     elements.wheelSection.hidden = true;
     elements.finishPanel.hidden = false;
     elements.finishTitle.textContent = "Gra zakończona";
@@ -566,7 +566,6 @@
       elements.finalRanking.append(row);
     });
     updateGameDisplay();
-    elements.finishPanel.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
   function returnToSetup() {
@@ -579,13 +578,16 @@
     elements.gameView.hidden = true;
     elements.setupView.hidden = false;
     elements.endGameButton.hidden = true;
-    elements.questionPanel.hidden = true;
+    closeQuestionPanel();
     elements.finishPanel.hidden = true;
     elements.wheelSection.hidden = false;
     elements.spinButton.disabled = false;
     elements.categoryStatus.textContent = "";
     refreshPoolDisplay();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function closeQuestionPanel() {
+    if (elements.questionPanel.open) elements.questionPanel.close();
   }
 
   function resetQuestionHistory() {
@@ -608,6 +610,9 @@
     targetValues[activeGoalMode] = elements.targetInput.value;
   });
   elements.setupForm.addEventListener("submit", beginGame);
+  elements.questionPanel.addEventListener("cancel", function (event) {
+    event.preventDefault();
+  });
   elements.spinButton.addEventListener("click", spinWheel);
   elements.nextButton.addEventListener("click", nextTurn);
   elements.resetPoolButton.addEventListener("click", resetQuestionHistory);
