@@ -82,51 +82,12 @@
       elements.storageNote.textContent = "Przeglądarka nie pozwoliła zapisać historii. Pytania nie będą powtarzane do końca tej sesji.";
     }
   }
-
-  function fallbackId(question) {
-    const content = JSON.stringify([question.question, question.category, question.answers, question.correctIndex, question.image || ""]);
-    let hash = 2166136261;
-    for (let i = 0; i < content.length; i += 1) {
-      hash ^= content.charCodeAt(i);
-      hash = Math.imul(hash, 16777619);
-    }
-    return "q-" + (hash >>> 0).toString(16);
-  }
-
-  function isValidQuestion(question) {
-    return question &&
-      typeof question.question === "string" &&
-      question.question.trim() &&
-      typeof question.category === "string" &&
-      question.category.trim() &&
-      Array.isArray(question.answers) &&
-      question.answers.length >= 2 &&
-      question.answers.every(function (answer) { return typeof answer === "string"; }) &&
-      Number.isInteger(question.correctIndex) &&
-      question.correctIndex >= 0 &&
-      question.correctIndex < question.answers.length;
-  }
-
   function loadQuestions() {
     try {
-      const parsed = window.QUESTIONS;
-      if (!Array.isArray(parsed)) {
-        throw new Error("Nie znaleziono tablicy pytań w questions.js.");
-      }
-      state.questions = parsed.filter(isValidQuestion).map(function (question) {
-        return Object.assign({}, question, {
-          id: typeof question.id === "string" && question.id ? question.id : fallbackId(question)
-        });
-      });
-      if (!state.questions.length) {
-        throw new Error("W pliku nie ma poprawnych pytań.");
-      }
-
+      window.QUESTIONS
       state.loaded = true;
-      const skipped = parsed.length - state.questions.length;
-      elements.dataStatus.textContent = skipped
-        ? "Pominięto " + skipped + " niepoprawnych wpisów w pliku pytań."
-        : "Pula pytań jest gotowa.";
+      state.questions= window.QUESTIONS;
+      elements.dataStatus.textContent =  "Pula pytań jest gotowa.";
       elements.questionCount.textContent = state.questions.length;
       elements.categoryCount.textContent = new Set(state.questions.map(function (question) { return question.category; })).size;
       refreshPoolDisplay();
@@ -138,17 +99,20 @@
   }
 
   function getAvailableQuestions() {
-    return state.questions.filter(function (question) { return !state.usedIds.has(question.id); });
+    let qesions = state.questions.filter(function (question) { return !state.usedIds.has(question.id); });
+    if (qesions.length === 0 || state.questions.length >0) {
+            return state.questions.filter(function (question) { return !state.usedIds.has(question.id); });
+    }
+    return qesions;
   }
 
   function getAvailableCategories() {
-    const counts = new Map();
-    getAvailableQuestions().forEach(function (question) {
-      counts.set(question.category, (counts.get(question.category) || 0) + 1);
-    });
-    return Array.from(counts.entries())
-      .map(function (entry) { return { name: entry[0], count: entry[1] }; })
-      .sort(function (a, b) { return a.name.localeCompare(b.name, "pl"); });
+    return state.questions.reduce(function (categories, question) {
+      if(!categories.includes(question.category)) {
+        categories.push(question.category);
+      }
+      return categories;
+    }, []);
   }
 
   function refreshPoolDisplay() {
@@ -164,7 +128,7 @@
 
     if (!state.game || (!state.game.finished && !state.spinning)) {
       state.categoriesOnWheel = getAvailableCategories();
-      drawWheel(state.categoriesOnWheel, state.rotation);
+      drawWheel( state.rotation);
     }
   }
 
@@ -226,7 +190,7 @@
     return lines;
   }
 
-  function drawWheel(categories, rotation) {
+  function drawWheel( rotation) {
     const canvas = elements.wheelCanvas;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -234,6 +198,7 @@
     const radius = center - 21;
     const safeRotation = ((rotation % TAU) + TAU) % TAU;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let categories = state.categoriesOnWheel;
 
     if (!categories.length) {
       ctx.beginPath();
@@ -277,7 +242,7 @@
       ctx.textBaseline = "middle";
       const fontSize = categories.length > 8 ? 14 : categories.length > 5 ? 15 : 17;
       ctx.font = "700 " + fontSize + "px sans-serif";
-      const lines = wrapCategory(category.name, 20);
+      const lines = wrapCategory(category, 20);
       lines.forEach(function (line, lineIndex) {
         const y = (lineIndex - (lines.length - 1) / 2) * (fontSize + 2);
         ctx.fillText(line, 0, y, radius * .58);
@@ -300,7 +265,6 @@
     ctx.fillStyle = "#1e7466";
     ctx.font = "700 11px sans-serif";
     ctx.fillText("WIEDZY", center, center + 12);
-    canvas.setAttribute("aria-label", "Kategorie na kole: " + categories.map(function (category) { return category.name; }).join(", "));
   }
 
   function beginGame(event) {
@@ -337,7 +301,7 @@
     elements.categoryStatus.textContent = "";
     elements.spinButton.disabled = false;
     state.categoriesOnWheel = getAvailableCategories();
-    drawWheel(state.categoriesOnWheel, state.rotation);
+    drawWheel(state.rotation);
     updateGameDisplay();
   }
 
@@ -366,25 +330,21 @@
       row.append(indicator, name, score);
       elements.scoreboard.append(row);
     });
-    refreshPoolDisplay();
   }
 
   function spinWheel() {
-    if (!state.game || state.game.finished || state.spinning || state.game.currentQuestion) return;
-    const categories = getAvailableCategories();
-    if (!categories.length) {
-      finishGame("Wykorzystaliście wszystkie dostępne pytania.");
-      return;
-    }
-    state.categoriesOnWheel = categories;
-    drawWheel(categories, state.rotation);
+    if (!state.game || state.game.finished || state.spinning || state.game.currentQuestion) return;   
+    drawWheel(state.rotation);
     state.spinning = true;
     elements.spinButton.disabled = true;
     elements.categoryStatus.textContent = "Koło się kręci…";
 
-    const selectedIndex = Math.floor(Math.random() * categories.length);
-    const selectedCategory = categories[selectedIndex];
-    const step = TAU / categories.length;
+
+    const selectedQuestionIndex = Math.floor(Math.random() * getAvailableQuestions().length);
+    const question = getAvailableQuestions()[selectedQuestionIndex];
+    const selectedCategory = question.category;
+    const step = TAU / state.categoriesOnWheel.length;
+    const selectedIndex = state.categoriesOnWheel.indexOf(selectedCategory);
     const desiredRotation = ((Math.PI / 2 - (selectedIndex + .5) * step) % TAU + TAU) % TAU;
     const currentRotation = ((state.rotation % TAU) + TAU) % TAU;
     const delta = (desiredRotation - currentRotation + TAU) % TAU;
@@ -396,7 +356,7 @@
     function animate(now) {
       const progress = Math.min(1, (now - startTime) / duration);
       const eased = 1 - Math.pow(1 - progress, 4);
-      drawWheel(categories, startRotation + (endRotation - startRotation) * eased);
+      drawWheel( startRotation + (endRotation - startRotation) * eased);
       if (progress < 1) {
         state.animationFrame = window.requestAnimationFrame(animate);
         return;
@@ -404,18 +364,9 @@
 
       state.animationFrame = null;
       state.rotation = endRotation % TAU;
-      drawWheel(categories, state.rotation);
+      drawWheel( state.rotation);
       state.spinning = false;
-      const questionsInCategory = getAvailableQuestions().filter(function (question) {
-        return question.category === selectedCategory.name;
-      });
-      const question = questionsInCategory[Math.floor(Math.random() * questionsInCategory.length)];
-      if (!question) {
-        elements.categoryStatus.textContent = "W tej kategorii nie ma już pytań.";
-        elements.spinButton.disabled = false;
-        return;
-      }
-      elements.categoryStatus.textContent = "Wylosowana kategoria: " + selectedCategory.name;
+      elements.categoryStatus.textContent = "Wylosowana kategoria: " + selectedCategory;
       showQuestion(question);
     }
     window.requestAnimationFrame(animate);
@@ -426,7 +377,6 @@
     state.game.answerSubmitted = false;
     state.usedIds.add(question.id);
     persistUsedIds();
-    refreshPoolDisplay();
     elements.questionCategory.textContent = question.category;
     elements.questionProgress.textContent = "Pytanie " + (state.game.answered + 1);
     elements.questionText.textContent = question.question;
@@ -538,8 +488,6 @@
     closeQuestionPanel();
     elements.categoryStatus.textContent = "";
     elements.spinButton.disabled = false;
-    state.categoriesOnWheel = getAvailableCategories();
-    drawWheel(state.categoriesOnWheel, state.rotation);
     updateGameDisplay();
     elements.spinButton.focus({ preventScroll: true });
   }

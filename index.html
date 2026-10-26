@@ -16,11 +16,11 @@
         <div class="intro-grid">
           <div class="intro-copy">
             <h1>Koło wiedzy</h1>
-            <p class="intro-description">Wybierzcie graczy i cel gry. Koło wskaże kategorię, a każda odpowiedź przybliży Was do zwycięstwa.</p>
+            <p class="intro-description">Wybierzcie graczy i cel gry. Wylosowane pytanie wskaże kategorię na kole, a każda odpowiedź przybliży Was do zwycięstwa.</p>
             <div class="quick-stats" aria-label="Informacje o puli pytań">
               <div class="quick-stat"><strong id="question-count">—</strong><span>pytań w puli</span></div>
               <div class="quick-stat"><strong id="category-count">—</strong><span>kategorii</span></div>
-              <div class="quick-stat"><strong>1–4</strong><span>graczy</span></div>
+              <div class="quick-stat"><strong>1–8</strong><span>graczy</span></div>
             </div>
           </div>
 
@@ -34,6 +34,10 @@
               <option value="2" selected>2 graczy</option>
               <option value="3">3 graczy</option>
               <option value="4">4 graczy</option>
+              <option value="5">5 graczy</option>
+              <option value="6">6 graczy</option>
+              <option value="7">7 graczy</option>
+              <option value="8">8 graczy</option>
             </select>
             <div id="player-name-fields" class="player-name-fields"></div>
 
@@ -80,8 +84,8 @@
                 </div>
                 <section class="turn-panel" aria-labelledby="turn-title">
                   <h2 id="turn-title" class="turn-title">Teraz gra: <span id="current-player-name"></span></h2>
-                  <p class="turn-instruction">Zakręć kołem, aby wylosować temat pytania.</p>
-                  <button id="spin-button" class="button button-primary spin-button" type="button"><span class="button-icon" aria-hidden="true">↻</span><span>Losuj kategorię</span></button>
+                  <p class="turn-instruction">Zakręć kołem, aby wylosować pytanie.</p>
+                  <button id="spin-button" class="button button-primary spin-button" type="button"><span class="button-icon" aria-hidden="true">↻</span><span>Losuj pytanie</span></button>
                   <p id="category-status" class="category-status" role="status" aria-live="polite"></p>
                 </section>
               </div>

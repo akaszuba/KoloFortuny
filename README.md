@@ -14,7 +14,8 @@ Na hostingu umieść obok siebie index.html, styles.css, app.js, questions.js or
 - Każda poprawna odpowiedź daje 1 punkt, a błędna 0 punktów.
 - Przy celu punktowym wygrywa pierwsza osoba, która osiągnie wybrany wynik. Przy grze na rundy każdy gra tę samą liczbę tur; wygrywa najwyższy wynik.
 - Pytanie zostaje zapisane jako wykorzystane, gdy pokaże się na ekranie. Historia jest przechowywana w localStorage tej przeglądarki i przetrwa jej odświeżenie.
-- Gdy pula się skończy, gra się kończy. Przycisk „Wyzeruj historię pytań” pozwala rozpocząć nową grę z całą pulą.
+- Przy każdym losowaniu gra najpierw wybiera niewykorzystane pytanie, a potem koło wskazuje kategorię tego pytania.
+- Po wykorzystaniu wszystkich pytań historia zeruje się automatycznie i losowanie zaczyna się od nowa. Przycisk „Wyzeruj historię pytań” pozwala zrobić to wcześniej.
 
 Historia jest lokalna dla przeglądarki i adresu strony. Nie synchronizuje się między urządzeniami.
 
