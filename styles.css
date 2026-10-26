@@ -108,7 +108,7 @@ h1, h2, p { margin-top: 0; }
 .wheel-intro .eyebrow { justify-content: center; margin-bottom: 9px; }
 .wheel-intro h2, .finish-panel h2 { margin: 0 0 7px; font-size: 26px; font-weight: 800; letter-spacing: -.055em; }
 .muted-copy { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
-.wheel-wrap { position: relative; width: min(100%, 394px); margin: 24px auto 13px; filter: drop-shadow(0 12px 20px rgba(32, 45, 56, .14)); }
+.wheel-wrap { position: relative;  margin: 24px auto 13px; filter: drop-shadow(0 12px 20px rgba(32, 45, 56, .14)); }
 #wheel-canvas { width: 100%; height: auto; display: block; }
 .wheel-pointer { position: absolute; z-index: 1; top: -5px; left: 50%; width: 0; height: 0; border-top: 27px solid var(--gold); border-right: 17px solid transparent; border-left: 17px solid transparent; filter: drop-shadow(0 3px 2px rgba(60, 47, 25, .18)); transform: translateX(-50%); }
 .spin-button { min-width: 190px; margin-top: 2px; }
@@ -286,7 +286,6 @@ body {
 .wheel-intro h2 { font-size: clamp(20px, 2.1vw, 26px); }
 .wheel-intro .muted-copy { font-size: clamp(13px, 1.2vw, 15px); }
 .wheel-wrap {
-  width: min(100%, 43dvh, 440px);
   margin: clamp(8px, 1.4vh, 16px) auto clamp(6px, 1.2vh, 13px);
 }
 .spin-button { margin-top: 0; }
@@ -350,7 +349,6 @@ body {
   .question-image { max-height: min(38dvh, 320px); }
   .game-layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 8px; }
   .play-card { padding: 12px; }
-  .wheel-wrap { width: min(100%, 39dvh, 330px); }
   .score-card { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; padding: 8px 10px; }
   .score-card-heading, .score-divider, .used-count, .score-note { display: none; }
   .scoreboard { display: flex; gap: 5px; margin: 0; }
@@ -382,7 +380,6 @@ body {
   .storage-note { margin-top: 2px; }
   .game-heading { margin-bottom: 7px; }
   .play-card { padding-block: 10px; }
-  .wheel-wrap { width: min(100%, 39dvh, 360px); }
   .question-dialog { padding: 12px; }
   .question-topline { margin-bottom: 6px; }
   .question-main { gap: 10px; margin-bottom: 9px; }
@@ -406,21 +403,23 @@ body {
 :root { --ink-soft: #43505a; --muted: #59666e; --shadow: none; }
 body { background: var(--paper); }
 .setup-card, .play-card, .score-card { border-color: #c5ccc7; border-radius: 12px; box-shadow: none; }
-.game-view { display: block; height: auto; min-height: 0; }
+.game-view { display: flex; flex-direction: column; height: 100%; min-height: 0; }
 .game-layout {
   display: grid;
+  flex: 1 1 auto;
   height: auto;
   min-height: 0;
   grid-template-columns: minmax(0, 1fr) clamp(220px, 22vw, 260px);
-  align-items: start;
+  grid-template-rows: minmax(0, 1fr);
+  align-items: stretch;
   gap: 12px;
 }
-.play-card { height: auto; min-height: 0; align-content: center; padding: 14px; }
-.wheel-wrap { width: min(100%, 54dvh, 440px); margin: 0 auto 10px; filter: none; }
+.play-card { height: 100%; min-height: 0; align-content: center; padding: 14px; }
+.wheel-wrap {  margin: 0 auto 10px; filter: none; }
 .spin-button { min-height: 44px; }
 .category-status { min-height: 0; margin: 4px 0 0; font-size: 13px; }
 #category-status:empty { display: none; }
-.score-card { height: auto; min-height: 0; padding: 12px; }
+.score-card { align-self: start; height: auto; min-height: 0; padding: 12px; }
 .score-card-heading { display: block; margin-bottom: 10px; }
 .score-card-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
 .score-card-actions .goal-pill { padding: 7px 10px; font-size: 13px; }
@@ -436,12 +435,11 @@ body { background: var(--paper); }
 .button-primary { box-shadow: none; }
 
 @media (max-width: 760px) {
-  .game-layout { grid-template-columns: minmax(0, 1fr); gap: 8px; }
-  .wheel-wrap { width: min(100%, 48dvh, 360px); }
+  .game-layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 8px; }
+  .play-card { height: 100%; }
 }
 @media (max-width: 640px) {
-  .game-layout { grid-template-rows: auto auto; }
-  .wheel-wrap { width: min(100%, 42dvh, 320px); }
+  .game-layout { grid-template-rows: minmax(0, 1fr) auto; }
   .score-card { display: block; padding: 8px; }
   .score-card-heading { display: block; margin-bottom: 8px; }
   .score-card-actions { justify-content: flex-end; }
