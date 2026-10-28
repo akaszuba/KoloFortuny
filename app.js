@@ -10,6 +10,8 @@
     setupView: document.getElementById("setup-view"),
     gameView: document.getElementById("game-view"),
     setupForm: document.getElementById("setup-form"),
+    fullscreenToggles: Array.from(document.querySelectorAll("[data-fullscreen-toggle]")),
+    fullscreenStatus: document.getElementById("fullscreen-status"),
     playerCount: document.getElementById("player-count"),
     playerNameFields: document.getElementById("player-name-fields"),
     targetInput: document.getElementById("target-value"),
@@ -623,6 +625,23 @@
     if (elements.answerFeedbackDialog.open) elements.answerFeedbackDialog.close();
   }
 
+  function syncFullscreenControls() {
+    const isFullscreen = Boolean(document.fullscreenElement);
+    elements.fullscreenToggles.forEach(function (button) {
+      button.textContent = isFullscreen ? "Opuść pełny ekran" : "Pełny ekran";
+    });
+  }
+
+  async function toggleFullscreen() {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await document.documentElement.requestFullscreen();
+      elements.fullscreenStatus.textContent = "";
+    } catch (error) {
+      elements.fullscreenStatus.textContent = "Nie udało się zmienić trybu pełnoekranowego.";
+    }
+  }
+
   function resetQuestionHistory() {
     if (!window.confirm("Wyzerować historię wykorzystanych pytań? Następna gra może wylosować je ponownie.")) return;
     state.usedIds.clear();
@@ -643,6 +662,15 @@
     targetValues[activeGoalMode] = elements.targetInput.value;
   });
   elements.setupForm.addEventListener("submit", beginGame);
+  const fullscreenSupported = typeof document.documentElement.requestFullscreen === "function"
+    && typeof document.exitFullscreen === "function"
+    && document.fullscreenEnabled !== false;
+  elements.fullscreenToggles.forEach(function (button) {
+    button.hidden = !fullscreenSupported;
+    button.addEventListener("click", toggleFullscreen);
+  });
+  document.addEventListener("fullscreenchange", syncFullscreenControls);
+  syncFullscreenControls();
   elements.questionPanel.addEventListener("cancel", function (event) {
     event.preventDefault();
   });

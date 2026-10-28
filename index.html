@@ -25,8 +25,9 @@
           </div>
 
           <form id="setup-form" class="setup-card">
-            <div class="card-heading">
+            <div class="card-heading card-heading-actions">
               <div><h2>Ustawcie grę</h2></div>
+              <button class="button button-fullscreen" type="button" data-fullscreen-toggle>Pełny ekran</button>
             </div>
             <label class="field-label" for="player-count">Liczba graczy</label>
             <select id="player-count" class="field-control">
@@ -92,7 +93,7 @@
             </div>
 
             <dialog id="question-panel" class="question-dialog" aria-labelledby="question-text" aria-describedby="question-progress">
-              <div class="question-topline"><span id="question-category" class="category-chip"></span><span id="question-progress" class="question-progress"></span></div>
+              <div class="question-topline"><span id="question-category" class="category-chip"></span><span id="question-progress" class="question-progress"></span><button class="button button-fullscreen" type="button" data-fullscreen-toggle>Pełny ekran</button></div>
               <div class="question-main">
                 <h2 id="question-text" class="question-text" tabindex="-1"></h2>
                 <img id="question-image" class="question-image" alt="" hidden>
@@ -104,7 +105,7 @@
               <span id="answer-result-icon" class="answer-result-icon" aria-hidden="true"></span>
               <h2 id="answer-result-title" class="answer-result-title"></h2>
               <p id="answer-result-message" class="answer-result-message" aria-live="polite"></p>
-              <button id="answer-result-continue" class="button button-primary button-wide" type="button"></button>
+              <div class="answer-dialog-actions"><button class="button button-fullscreen" type="button" data-fullscreen-toggle>Pełny ekran</button><button id="answer-result-continue" class="button button-primary button-wide" type="button"></button></div>
             </dialog>
 
             <section id="finish-panel" class="finish-panel" aria-live="polite" hidden>
@@ -119,13 +120,14 @@
 
           <aside class="score-card" aria-label="Sterowanie i wyniki gry">
             <div class="score-card-heading">
-              <div class="score-card-actions"><div id="goal-pill" class="goal-pill"></div><button id="end-game-button" class="text-button" type="button" hidden>Zakończ grę</button></div>
+              <div class="score-card-actions"><div id="goal-pill" class="goal-pill"></div><button class="button button-fullscreen" type="button" data-fullscreen-toggle>Pełny ekran</button><button id="end-game-button" class="text-button" type="button" hidden>Zakończ grę</button></div>
             </div>
             <ol id="scoreboard" class="scoreboard"></ol>
           </aside>
         </div>
       </section>
     </main>
+    <div id="fullscreen-status" class="visually-hidden" role="status" aria-live="polite"></div>
 
   </body>
 </html>
